@@ -133,8 +133,8 @@ if st.session_state.messages[-1]["role"] != "assistant":
             st.session_state.messages.append(message)  # Add response to message history
             st.session_state.logged_prompt = collector.log_prompt(
                 config_model={"model": "gpt-3.5-turbo"},
-                prompt={"role": "user", "content": prompt},
-                generation={"role": "assistant", "content": response.response},
+                prompt=str({"role": "user", "content": prompt}),
+                generation=str({"role": "assistant", "content": response.response}),
             )
 
 
