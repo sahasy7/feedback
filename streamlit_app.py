@@ -119,7 +119,7 @@ for message in st.session_state.messages:
 collector = FeedbackCollector(
     email=st.secrets.TRUBRICS_EMAIL,
     password=st.secrets.TRUBRICS_PASSWORD,
-    project="default"
+    project="gsmData"
 )
 
 
@@ -139,7 +139,6 @@ if st.session_state.messages[-1]["role"] != "assistant":
 
 
 if st.session_state.logged_prompt:
-    st.write("A model generation...")
     user_feedback = collector.st_feedback(
         component="default",
         feedback_type="thumbs",
