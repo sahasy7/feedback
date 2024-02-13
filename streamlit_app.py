@@ -125,20 +125,17 @@ collector = FeedbackCollector(
 
 # If the last message is not from the assistant, generate a new response
 if st.session_state.messages[-1]["role"] != "assistant":
-  with st.chat_message("assistant"):
-    with st.spinner("Thinking..."):
-      response = st.session_state.chat_engine.query(prompt)
-      st.write(response.response)
-      message = {"role": "assistant", "content": response.response}
-      st.session_state.messages.append(
-          message)  # Add response to message history
-        
-if  st.session_state.messages:
-    st.session_state.logged_prompt = collector.log_prompt(
-        config_model={"model": "gpt-3.5-turbo"},
-        prompt=prompt,
-        generation= message,
-    )
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            response = st.session_state.chat_engine.query(prompt)
+            st.write(response.response)
+            message = {"role": "assistant", "content": response.response}
+            st.session_state.messages.append(message)  # Add response to message history
+            st.session_state.logged_prompt = collector.log_prompt(
+                config_model={"model": "gpt-3.5-turbo"},
+                prompt=prompt,
+                generation=response,
+            )
 
 
 if st.session_state.logged_prompt:
