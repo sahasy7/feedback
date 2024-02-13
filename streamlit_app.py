@@ -136,7 +136,7 @@ if len(message)> 0:
     st.session_state.logged_prompt = collector.log_prompt(
         config_model={"model": "gpt-3.5-turbo"},
         prompt=prompt,
-        generation=response,
+        generation= message,
     )
 if st.session_state.logged_prompt:
     st.write("A model generation...")
