@@ -7,6 +7,7 @@ from llama_index import download_loader
 import openai
 import os
 import streamlit as st
+from trubrics.integrations.streamlit import FeedbackCollector
 
 st.set_page_config(
     page_title="Chat with the Chat Bot",
@@ -97,6 +98,9 @@ chat_refine_msgs = [
 ]
 refine_template = ChatPromptTemplate(chat_refine_msgs)
 
+if "logged_prompt" not in st.session_state:
+    st.session_state.logged_prompt = None
+
 if "chat_engine" not in st.session_state.keys():
   # Initialize the chat engine
   st.session_state.chat_engine = index.as_query_engine(
@@ -111,6 +115,14 @@ for message in st.session_state.messages:
   with st.chat_message(message["role"]):
     st.write(message["content"])
 
+
+collector = FeedbackCollector(
+    email=st.secrets.TRUBRICS_EMAIL,
+    password=st.secrets.TRUBRICS_PASSWORD,
+    project="default"
+)
+
+
 # If the last message is not from the assistant, generate a new response
 if st.session_state.messages[-1]["role"] != "assistant":
   with st.chat_message("assistant"):
@@ -120,3 +132,21 @@ if st.session_state.messages[-1]["role"] != "assistant":
       message = {"role": "assistant", "content": response.response}
       st.session_state.messages.append(
           message)  # Add response to message history
+if len(response)> 0:
+    st.session_state.logged_prompt = collector.log_prompt(
+        config_model={"model": "gpt-3.5-turbo"},
+        prompt=prompt,
+        generation=response,
+    )
+if st.session_state.logged_prompt:
+    st.write("A model generation...")
+    user_feedback = collector.st_feedback(
+        component="default",
+        feedback_type="thumbs",
+        open_feedback_label="[Optional] Provide additional feedback",
+        model=st.session_state.logged_prompt.config_model.model,
+        prompt_id=st.session_state.logged_prompt.id,
+        align="flex-start"
+    )
+
+
