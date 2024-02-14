@@ -147,4 +147,4 @@ if st.session_state.logged_prompt:
         prompt_id=st.session_state.logged_prompt.id,
         align="flex-start"
     )
- st.rerun()
+ 
